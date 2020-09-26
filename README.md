@@ -1,5 +1,7 @@
 # Lucene.Net.DocumentMapper
 
+![CI](https://github.com/ssinno28/Lucene.Net.DocumentMapper/workflows/CI/badge.svg)
+
 `Install-Package Lucene.Net.DocumentMapper`
 
 This is a simple service that helps with mapping C# Types to Lucene Documents and back. In order to wire it up with DI just call `ServiceCollection.AddLuceneDocumentMapper`. 
