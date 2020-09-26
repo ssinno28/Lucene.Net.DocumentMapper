@@ -1,0 +1,37 @@
+name: CI
+
+on: 
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Setup Dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+          
+    - name: Restore Solution
+      run: dotnet restore Lucene.DocumentMapper.sln
+      
+    - name: Build Solution
+      run: dotnet build Lucene.DocumentMapper.sln 
+      
+    - name: Test Solution
+      run: dotnet test Lucene.DocumentMapper.sln
+      
+    - name: Publish Lucene.Net.DocumentMapper
+      uses: rohith/publish-nuget@v2
+      with:
+          PROJECT_FILE_PATH: Lucene.Net.DocumentMapper/Lucene.Net.DocumentMapper.csproj
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          VERSION_FILE_PATH: Lucene.Net.DocumentMapper/Lucene.Net.DocumentMapper.nuspec
+          VERSION_REGEX: <version>(.*)<\/version>
