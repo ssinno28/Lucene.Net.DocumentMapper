@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Lucene.Net.DocumentMapper</id>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <authors>Sammi Sinno</authors>
-    <description>A service that provides necessary functionality for mapping C# types to Lucene Documents</description>
+    <description>A service that provides functionality for mapping C# types to Lucene Documents and back.</description>
     <repository type="git" url="https://github.com/ssinno28/Lucene.Net.DocumentMapper" />
   </metadata>
 </package>

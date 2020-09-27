@@ -10,5 +10,6 @@ namespace Lucene.Net.DocumentMapper.Attributes
         }
         public bool Tokenized { get; set; }
         public bool Store { get; set; }
+        public bool IsKey { get; set; }
     }
 }
