@@ -33,5 +33,3 @@ jobs:
       with:
           PROJECT_FILE_PATH: Lucene.Net.DocumentMapper/Lucene.Net.DocumentMapper.csproj
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
-          VERSION_FILE_PATH: Lucene.Net.DocumentMapper/Lucene.Net.DocumentMapper.nuspec
-          VERSION_REGEX: <version>(.*)<\/version>
