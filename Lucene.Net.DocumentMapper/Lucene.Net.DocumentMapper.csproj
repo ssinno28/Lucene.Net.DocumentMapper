@@ -12,9 +12,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <NuspecFile>Lucene.Net.DocumentMapper.nuspec</NuspecFile>
-  </PropertyGroup>
-
 </Project>
