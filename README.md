@@ -83,4 +83,4 @@ For collection mapping, if the generic type is a primitive type in the instance 
 
 ### Search Attribute
 
-The search attribute comes with two properties, Store and Tokenized. Store is set to true by default and tokenized is false by default. If you set tokenzied to true for a string field it will store the string as a text field. 
+The search attribute comes with three properties, Store, IsKey and Tokenized. Store is set to true by default and tokenized is false by default. If you set tokenzied to true for a string field it will store the string as a text field. 
