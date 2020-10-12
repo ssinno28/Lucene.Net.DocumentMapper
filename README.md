@@ -6,6 +6,14 @@
 
 This is a simple service that helps with mapping C# Types to Lucene Documents and back. In order to wire it up with DI just call `ServiceCollection.AddLuceneDocumentMapper`. 
 
+In order to get started you will just have to inject `IDocumentMapper` into your class and use one of the Map methods:
+
+```
+T Map<T>(Document source);
+object Map(Document source, Type contentType);
+Document Map(object source);
+```
+
 It comes with a default set of Field Mappers, but you can easily add your own and override how any property is mapped by creating a class that implements `IFieldMapper` as shown here:
 
 ```c#
