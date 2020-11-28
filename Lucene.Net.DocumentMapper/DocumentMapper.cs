@@ -7,16 +7,19 @@ using Lucene.Net.DocumentMapper.Helpers;
 using Lucene.Net.DocumentMapper.Interfaces;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
+using Lucene.Net.Util;
 
 namespace Lucene.Net.DocumentMapper
 {
     public class DocumentMapper : IDocumentMapper
     {
         private readonly IEnumerable<IFieldMapper> _propertyMappers;
+        private readonly IEnumerable<IFieldsMapper> _fieldsMappers;
 
-        public DocumentMapper(IEnumerable<IFieldMapper> propertyMappers)
+        public DocumentMapper(IEnumerable<IFieldMapper> propertyMappers, IEnumerable<IFieldsMapper> fieldsMappers)
         {
             _propertyMappers = propertyMappers;
+            _fieldsMappers = fieldsMappers;
         }
 
         public T Map<T>(Document source)
@@ -147,6 +150,14 @@ namespace Lucene.Net.DocumentMapper
 
         private IList<Field> GetFields(object source, IList<Field> fields, string prefix)
         {
+            foreach (var fieldsMapper in _fieldsMappers)
+            {
+                if (fieldsMapper.IsMatch(source.GetType()))
+                {
+                    fields.AddRange(fieldsMapper.MapToFields(source));
+                }
+            }
+
             foreach (var propertyInfo in source.GetType().GetProperties())
             {
                 var propertyValue = propertyInfo.GetValue(source);
