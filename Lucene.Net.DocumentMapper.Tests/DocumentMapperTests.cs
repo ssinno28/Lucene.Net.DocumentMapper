@@ -37,6 +37,15 @@ namespace Lucene.Net.DocumentMapper.Tests
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Name"));
 
             Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
+        }   
+        
+        [Fact]
+        public void Test_Is_Enum()
+        {
+            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category3"));
+
+            Assert.Equal(typeof(EnumFieldMapper), propertyMapper.GetType());
         }        
         
         [Fact]
@@ -172,6 +181,24 @@ namespace Lucene.Net.DocumentMapper.Tests
 
             Assert.Equal(3, fields.Count());
             Assert.All(fields, field => field.Name.Equals("TagIds"));
+        }  
+        
+        [Fact]
+        public void Test_Enum_Properly_Mapped()
+        {
+            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var blogPost = new BlogPost
+            {
+                Category3 = EnumCategory.Database
+            };
+
+            var document = documentMapper.Map(blogPost);
+            var field = document.Fields.FirstOrDefault(x => x.Name.StartsWith("Category3"));
+
+            Assert.NotNull(field);
+
+            blogPost = documentMapper.Map<BlogPost>(document);
+            Assert.Equal(EnumCategory.Database, blogPost.Category3);
         }        
         
         [Fact]
