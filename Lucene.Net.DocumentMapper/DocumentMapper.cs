@@ -69,7 +69,7 @@ namespace Lucene.Net.DocumentMapper
                             ((IList)nestedCollection).Add(GetValueFromField(propertyInfo, (Field)indexableField));
                         }
                     }
-                    else
+                    else if(listFields.Any())
                     {
                         var firstField = listFields.First();
                         var nextStartField =
