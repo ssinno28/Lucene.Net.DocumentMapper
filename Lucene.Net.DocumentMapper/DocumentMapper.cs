@@ -71,11 +71,18 @@ namespace Lucene.Net.DocumentMapper
                     }
                     else
                     {
-                        var propertyCount = genericType.GetProperties().Length;
+                        var firstField = listFields.First();
+                        var nextStartField =
+                            listFields.Where(x => x.Name.Equals(firstField.Name))
+                                .Skip(1)
+                                .First();
+                        var index = listFields.IndexOf(nextStartField);
+
+
                         var groupedFields =
                             listFields.Select(x => x)
                                 .ToList()
-                                .ChunkBy(propertyCount);
+                                .ChunkBy(index);
 
                         foreach (var groupedField in groupedFields)
                         {

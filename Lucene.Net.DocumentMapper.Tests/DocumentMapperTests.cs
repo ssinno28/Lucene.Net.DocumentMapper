@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoFixture;
 using Lucene.Net.DocumentMapper.FieldMappers;
 using Lucene.Net.DocumentMapper.Helpers;
 using Lucene.Net.DocumentMapper.Interfaces;
 using Lucene.Net.DocumentMapper.Tests.Models;
+using Lucene.Net.DocumentMapper.Tests.Models.NestedObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -14,8 +16,11 @@ namespace Lucene.Net.DocumentMapper.Tests
     public class DocumentMapperTests
     {
         private readonly ServiceProvider _serviceProvider;
+        private readonly Fixture _fixture;
+
         public DocumentMapperTests()
         {
+            _fixture = new Fixture();
             _serviceProvider = new ServiceCollection()
                 .AddLuceneDocumentMapper()
                 .BuildServiceProvider();
@@ -37,8 +42,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Name"));
 
             Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
-        }   
-        
+        }
+
         [Fact]
         public void Test_Is_Enum()
         {
@@ -46,8 +51,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category3"));
 
             Assert.Equal(typeof(EnumFieldMapper), propertyMapper.GetType());
-        }        
-        
+        }
+
         [Fact]
         public void Test_Is_DateTime()
         {
@@ -55,8 +60,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("PublishedDate"));
 
             Assert.Equal(typeof(DateTimeFieldMapper), propertyMapper.GetType());
-        }        
-        
+        }
+
         [Fact]
         public void Test_Is_DateTimeOffset()
         {
@@ -98,8 +103,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var isIndexed = document.GetField("SeoDescription").IndexableFieldType.IsIndexed;
 
             Assert.False(isIndexed);
-        }        
-        
+        }
+
         [Fact]
         public void Test_Field_Not_Stored()
         {
@@ -108,7 +113,7 @@ namespace Lucene.Net.DocumentMapper.Tests
 
             Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
 
-            var blogPost = new BlogPost { SeoTitle = "My Test Seo Title"};
+            var blogPost = new BlogPost { SeoTitle = "My Test Seo Title" };
 
             var document = documentMapper.Map(blogPost);
             var isStored = document.GetField("SeoTitle").IndexableFieldType.IsStored;
@@ -137,8 +142,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var category = JsonConvert.DeserializeObject<Category>(document.GetField("Category").GetStringValue());
 
             Assert.Equal("TestCategory", category.Name);
-        }        
-        
+        }
+
         [Fact]
         public void Test_ComplexType_Stored_As_Individual_Fields()
         {
@@ -160,8 +165,8 @@ namespace Lucene.Net.DocumentMapper.Tests
             var fields = document.Fields.Where(x => x.Name.StartsWith("Category2"));
 
             Assert.Equal(2, fields.Count());
-        }        
-        
+        }
+
         [Fact]
         public void Test_Collection_Primitive_Type_Fields()
         {
@@ -181,8 +186,8 @@ namespace Lucene.Net.DocumentMapper.Tests
 
             Assert.Equal(3, fields.Count());
             Assert.All(fields, field => field.Name.Equals("TagIds"));
-        }  
-        
+        }
+
         [Fact]
         public void Test_Enum_Properly_Mapped()
         {
@@ -199,8 +204,8 @@ namespace Lucene.Net.DocumentMapper.Tests
 
             blogPost = documentMapper.Map<BlogPost>(document);
             Assert.Equal(EnumCategory.Database, blogPost.Category3);
-        }        
-        
+        }
+
         [Fact]
         public void Test_Collection_Complex_Type_Fields()
         {
@@ -236,11 +241,25 @@ namespace Lucene.Net.DocumentMapper.Tests
             Assert.All(fields, field => field.Name.Equals("Tags"));
 
             var mappedBlogPost = documentMapper.Map<BlogPost>(document);
-           for(var i = 0; i  < blogPost.Tags.Count; i++)
-           {
-               Assert.Equal(mappedBlogPost.Tags[i].Id, blogPost.Tags[i].Id);
-               Assert.Equal(mappedBlogPost.Tags[i].Name, blogPost.Tags[i].Name);
-           }
+            for (var i = 0; i < blogPost.Tags.Count; i++)
+            {
+                Assert.Equal(mappedBlogPost.Tags[i].Id, blogPost.Tags[i].Id);
+                Assert.Equal(mappedBlogPost.Tags[i].Name, blogPost.Tags[i].Name);
+            }
+        }
+
+        [Fact]
+        public void Test_Collection_Nested_Complex_types()
+        {
+            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var node = _fixture.Create<Node>();
+
+            var document = documentMapper.Map(node);
+            var expectedNode = documentMapper.Map<Node>(document);
+
+            var obj1Str = JsonConvert.SerializeObject(node);
+            var obj2Str = JsonConvert.SerializeObject(expectedNode);
+            Assert.Equal(obj1Str, obj2Str);
         }
 
         [Fact]
