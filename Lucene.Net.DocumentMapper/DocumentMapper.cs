@@ -75,9 +75,9 @@ namespace Lucene.Net.DocumentMapper
                         var nextStartField =
                             listFields.Where(x => x.Name.Equals(firstField.Name))
                                 .Skip(1)
-                                .First();
-                        var index = listFields.IndexOf(nextStartField);
+                                .FirstOrDefault();
 
+                        var index = nextStartField != null ? listFields.IndexOf(nextStartField) : listFields.Count;
 
                         var groupedFields =
                             listFields.Select(x => x)
