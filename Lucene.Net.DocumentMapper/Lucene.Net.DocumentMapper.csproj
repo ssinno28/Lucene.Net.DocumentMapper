@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <RepositoryUrl>https://github.com/ssinno28/Lucene.Net.DocumentMapper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>A service that provides functionality for mapping C# types to Lucene Documents and back.</Description>

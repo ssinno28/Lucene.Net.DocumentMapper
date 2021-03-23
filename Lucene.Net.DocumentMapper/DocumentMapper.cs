@@ -72,22 +72,35 @@ namespace Lucene.Net.DocumentMapper
                     else if(listFields.Any())
                     {
                         var firstField = listFields.First();
-                        var nextStartField =
+                        var firstFieldList =
                             listFields.Where(x => x.Name.Equals(firstField.Name))
-                                .Skip(1)
-                                .FirstOrDefault();
+                                .ToList();
 
-                        var index = nextStartField != null ? listFields.IndexOf(nextStartField) : listFields.Count;
-
-                        var groupedFields =
-                            listFields.Select(x => x)
-                                .ToList()
-                                .ChunkBy(index);
-
-                        foreach (var groupedField in groupedFields)
+                        foreach (var indexableField in firstFieldList)
                         {
+                            IList<IIndexableField> groupedFields;
+                            if (indexableField.Equals(firstFieldList.Last()))
+                            {
+                                var skip = listFields.IndexOf(indexableField);
+                                var take = listFields.Count - skip;
+
+
+                                groupedFields = listFields.Skip(skip).Take(take).ToList();
+                            }
+                            else
+                            {
+                                var firstFieldIdx = firstFieldList.IndexOf(indexableField);
+                                var nextFirstField = firstFieldList[firstFieldIdx + 1];
+
+                                var skip = listFields.IndexOf(indexableField);
+                                var take = listFields.IndexOf(nextFirstField) - skip;
+
+
+                                groupedFields = listFields.Skip(skip).Take(take).ToList();
+                            }
+
                             object nestedComplexType = Activator.CreateInstance(genericType);
-                            ((IList)nestedCollection).Add(GetValue(groupedField, nestedComplexType, level + 1));
+                            ((IList)nestedCollection).Add(GetValue(groupedFields, nestedComplexType, level + 1));
                         }
                     }
 
