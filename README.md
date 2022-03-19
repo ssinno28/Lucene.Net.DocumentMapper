@@ -7,7 +7,7 @@
 This is a simple service that helps with mapping C# Types to Lucene Documents and back. In order to wire it up with DI just call `ServiceCollection.AddLuceneDocumentMapper`. 
 
 In order to get started you will just have to inject `IDocumentMapper` into your class,
-```
+```c#
 public class LuceneRepository
 {
     public LuceneRepository(IDocumentMapper mapper)
@@ -43,13 +43,13 @@ public class LuceneRepository
 
 You can use one of the Map methods:
 
-```
+```c#
 T Map<T>(Document source);
 object Map(Document source, Type contentType);
 Document Map(object source);
 ```
 
-```
+```c#
 // add, update or delete document
 var document = _mapper.Map(entity);
 
