@@ -6,12 +6,60 @@
 
 This is a simple service that helps with mapping C# Types to Lucene Documents and back. In order to wire it up with DI just call `ServiceCollection.AddLuceneDocumentMapper`. 
 
-In order to get started you will just have to inject `IDocumentMapper` into your class and use one of the Map methods:
+In order to get started you will just have to inject `IDocumentMapper` into your class,
+```
+public class LuceneRepository
+{
+    public LuceneRepository(IDocumentMapper mapper)
+    {
+        // Map .NET Types to Lucene Documents and back.
+        _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
+    }
+
+    /// <summary>
+    /// Adds a document into the index
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    public virtual bool AddDocument(TEntity entity)
+    {
+        if (entity is null || entity.Id is null)
+            return false;
+
+        using (FSDirectory directory = FSDirectory.Open(IndexName))
+        using (Analyzer analyzer = new StandardAnalyzer(_luceneConfig.LuceneVersion)) // _defaultAnalyzer
+        {
+            IndexWriterConfig config = new IndexWriterConfig(_luceneConfig.LuceneVersion, analyzer);
+            using (IndexWriter writer = new IndexWriter(directory, config))
+            {
+                writer.DeleteDocuments(new Term(KeyProperty, entity.Id.ToString()));
+                writer.AddDocument(_mapper.Map(entity));
+                writer.Commit();
+            }
+        }
+    }
+}
+```
+
+You can use one of the Map methods:
 
 ```
 T Map<T>(Document source);
 object Map(Document source, Type contentType);
 Document Map(object source);
+```
+
+```
+// add, update or delete document
+var document = _mapper.Map(entity);
+
+// search
+_searcherManager.MaybeRefreshBlocking();
+var searcher = _searcherManager.Acquire();
+hits.ScoreDocs
+    .Skip(skip)
+    .Take(pageSize)
+    .Select(scoreDoc => _mapper.Map<T>(searcher.Doc(scoreDoc.Doc)));
 ```
 
 It comes with a default set of Field Mappers, but you can easily add your own and override how any property is mapped by creating a class that implements `IFieldMapper` as shown here:
