@@ -99,7 +99,7 @@ Any property that is of type `object` gets mapped to a JSON string in the field 
 
 For example if you have a BlogPost type setup like this: 
 
-```
+```c#
     public class BlogPost
     {
         public DateTime PublishedDate { get; set; }
