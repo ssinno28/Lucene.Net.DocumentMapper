@@ -187,7 +187,7 @@ namespace Lucene.Net.DocumentMapper
         public Document Map(object source)
         {
             var document = new Document();
-            var fields = GetFields(source, new List<Field>(), String.Empty);
+            var fields = GetFields(source, new List<Field>(), string.Empty);
             foreach (var field in fields)
             {
                 if (field == null) continue;
