@@ -4,6 +4,9 @@ using Lucene.Net.Documents;
 
 namespace Lucene.Net.DocumentMapper.Interfaces
 {
+    /// <summary>
+    /// Map .NET Types to Lucene Documents and back.
+    /// </summary>
     public interface IDocumentMapper
     {
         T Map<T>(Document source);
