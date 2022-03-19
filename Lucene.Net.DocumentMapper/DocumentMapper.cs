@@ -11,6 +11,9 @@ using Lucene.Net.Util;
 
 namespace Lucene.Net.DocumentMapper
 {
+    /// <summary>
+    /// Map .NET Types to Lucene Documents and back.
+    /// </summary>
     public class DocumentMapper : IDocumentMapper
     {
         private readonly IEnumerable<IFieldMapper> _propertyMappers;
