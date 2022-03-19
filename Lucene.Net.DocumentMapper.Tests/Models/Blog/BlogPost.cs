@@ -9,18 +9,18 @@ namespace Lucene.Net.DocumentMapper.Tests.Models
         public DateTime PublishedDate { get; set; }
         public DateTimeOffset PublishedDateOffset { get; set; }
         public bool IsPublished { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         [Search(Tokenized = true)]
-        public string Body { get; set; }
-        public string SeoDescription { get; set; }
+        public string Body { get; set; } = string.Empty;
+        public string SeoDescription { get; set; } = string.Empty;
         [Search(Store = false)]
-        public string SeoTitle { get; set; }
-        public string Excerpt { get; set; }
-        public string ThumbnailUrl { get; set; }
-        public IList<string> TagIds { get; set; }
-        public object Category { get; set; }
-        public Category Category2 { get; set; }
-        public IList<Tag> Tags { get; set; }
+        public string SeoTitle { get; set; } = string.Empty;
+        public string Excerpt { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
+        public IList<string> TagIds { get; set; } = new List<string>();
+        public object? Category { get; set; }
+        public Category? Category2 { get; set; }
+        public IList<Tag> Tags { get; set; } = new List<Tag>();
 
         public EnumCategory Category3 { get; set; }
     }

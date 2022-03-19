@@ -66,7 +66,9 @@ namespace Lucene.Net.DocumentMapper
                     {
                         foreach (var indexableField in listFields)
                         {
-                            ((IList)nestedCollection).Add(GetValueFromField(propertyInfo, (Field)indexableField));
+                            var v = GetValueFromField(propertyInfo, (Field)indexableField);
+                            if (v == null) continue;
+                            ((IList)nestedCollection).Add(v);
                         }
                     }
                     else if(listFields.Any())
@@ -133,21 +135,55 @@ namespace Lucene.Net.DocumentMapper
             return parent;
         }
 
-        public IFieldMapper GetFieldMapper(PropertyInfo propertyInfo)
+        public IFieldMapper? GetFieldMapper(PropertyInfo? propertyInfo)
         {
+            if (propertyInfo == null) return null;
+
             return _propertyMappers
                 .OrderByDescending(x => x.Priority)
                 .FirstOrDefault(x => x.IsMatch(propertyInfo));
         }
 
-        private object GetValueFromField(PropertyInfo propertyInfo, Field field)
+        /// <summary>
+        /// The value of the field as a object, or null.
+        /// </summary>
+        /// <param name="propertyInfo"></param>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        private object? GetValueFromField(PropertyInfo propertyInfo, Field field)
         {
             var propertyMapper = GetFieldMapper(propertyInfo);
             return propertyMapper != null
                     ? propertyMapper.MapFromField(field)
-                    : Convert.ChangeType(field.GetStringValue(), propertyInfo.GetPropertyType());
+                    : Parse(field.GetStringValue(), propertyInfo.GetPropertyType());
         }
 
+        protected virtual object? Parse(string value, Type type)
+        {
+            if(value == null) return null;
+
+            // Optimization - don't bother calling 
+            if (type == typeof(string))
+            {
+                return value;
+            }
+
+            // string -> DateTime
+            if (type == typeof(DateTime))
+            {
+                // Attempt to use the Lucene.Net date conversion if it fails to parse
+                // Support the Lucene.Net date formatting (yyyyMMddHHmmssfff or any subset starting on the left) for convenience.
+                return DateTools.StringToDate(value);
+            }
+                
+            return Convert.ChangeType(value, type);
+        }
+
+        /// <summary>
+        /// Map .NET object to Lucene Document
+        /// </summary>
+        /// <param name="source">.NET object</param>
+        /// <returns>Lucene Document</returns>
         public Document Map(object source)
         {
             var document = new Document();
@@ -162,7 +198,7 @@ namespace Lucene.Net.DocumentMapper
             return document;
         }
 
-        private Field GetFieldFromValue(PropertyInfo propertyInfo, object value, string name)
+        private Field? GetFieldFromValue(PropertyInfo propertyInfo, object value, string name)
         {
             var propertyMapper = GetFieldMapper(propertyInfo);
             return propertyMapper?.MapToField(propertyInfo, value, name);
@@ -200,7 +236,9 @@ namespace Lucene.Net.DocumentMapper
                     {
                         foreach (var itemValue in propertyValueList)
                         {
-                            fields.Add(GetFieldFromValue(propertyInfo, itemValue, name));
+                            var f = GetFieldFromValue(propertyInfo, itemValue, name);
+                            if(f == null) continue;
+                            fields.Add(f);
                         }
                     }
                     else
@@ -220,7 +258,9 @@ namespace Lucene.Net.DocumentMapper
                     continue;
                 }
 
-                fields.Add(GetFieldFromValue(propertyInfo, propertyValue, name));
+                var fieldFromValue = GetFieldFromValue(propertyInfo, propertyValue, name);
+                if(fieldFromValue != null)
+                    fields.Add(fieldFromValue);
             }
 
             return fields;

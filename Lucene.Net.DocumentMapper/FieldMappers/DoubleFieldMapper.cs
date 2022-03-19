@@ -20,7 +20,13 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
             return new DoubleField(name, convertedValue, GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as a <see cref="System.Double"/>, or null.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
             return field.GetDoubleValue();
         }

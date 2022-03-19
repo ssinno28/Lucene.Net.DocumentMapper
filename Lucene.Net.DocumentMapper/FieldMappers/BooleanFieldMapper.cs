@@ -5,6 +5,9 @@ using Lucene.Net.Documents;
 
 namespace Lucene.Net.DocumentMapper.FieldMappers
 {
+    /// <summary>
+    /// Field Mapper
+    /// </summary>
     public class BooleanFieldMapper : AFieldMapper, IFieldMapper
     {
         public int Priority => 0;
@@ -24,9 +27,15 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
                     : Boolean.FalseString, GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as a <see cref="System.Boolean"/>, or null.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
-            return Boolean.Parse(field.GetStringValue());
+            var v = field.GetStringValue();
+            return v == null ? null : bool.Parse(v);
         }
     }
 }

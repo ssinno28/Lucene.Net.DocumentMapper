@@ -9,6 +9,12 @@ namespace Lucene.Net.DocumentMapper.Interfaces
         T Map<T>(Document source);
         object Map(Document source, Type contentType);
         Document Map(object source);
-        IFieldMapper GetFieldMapper(PropertyInfo propertyInfo);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyInfo">a new instance of the <see cref="System.Reflection.PropertyInfo"/> class, or null.</param>
+        /// <returns></returns>
+        IFieldMapper? GetFieldMapper(PropertyInfo? propertyInfo);
     }
 }
