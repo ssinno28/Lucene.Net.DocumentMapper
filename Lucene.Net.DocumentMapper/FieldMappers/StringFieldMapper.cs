@@ -24,10 +24,10 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
         /// <returns></returns>
         public Field MapToField(PropertyInfo propertyInfo, object value, string name)
         {
-            //if (value.ToString().Length > 32766)
-            //{
-            //    return new Field(name, value.ToString(), GetStore(propertyInfo), Field.Index.NO);
-            //}
+            if (value.ToString().Length > 32766)
+            {
+                return new Field(name, value.ToString(), GetStore(propertyInfo), Field.Index.NO);
+            }
 
             return new StringField(name, value.ToString(), GetStore(propertyInfo));
         }

@@ -28,7 +28,6 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
         /// <returns></returns>
         public object? MapFromField(Field field)
         {
-            // public static object? DeserializeObject(string value);
             return JsonConvert.DeserializeObject(field.GetStringValue());
         }
     }
