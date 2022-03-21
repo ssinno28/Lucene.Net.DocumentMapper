@@ -20,10 +20,15 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
             return new StoredField(name, new BytesRef((byte[]) value));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as the contents of the <see cref="BytesRef"/>, or null.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
             var binaryValue = field.GetBinaryValue();
-            return binaryValue.Bytes;
+            return binaryValue?.Bytes;
         }
     }
 }

@@ -21,8 +21,14 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
             return new Int32Field(name, convertedValue, GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field value)
+        /// <summary>
+        /// The value of the field as a <see cref="System.Int32"/>, or null.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field value)
         {
+            // public virtual int? GetInt32Value();
             return value.GetInt32Value();
         }
     }

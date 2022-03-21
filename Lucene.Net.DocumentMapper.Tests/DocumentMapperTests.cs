@@ -29,73 +29,82 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Is_Tokenized()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Body"));
 
-            Assert.Equal(typeof(TextFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(TextFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_String()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
+            //var p = typeof(BlogPost).GetProperties().FirstOrDefault(x => x.Name == "Name");
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Name"));
 
-            Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(StringFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_Enum()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category3"));
 
-            Assert.Equal(typeof(EnumFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(EnumFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_DateTime()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("PublishedDate"));
 
-            Assert.Equal(typeof(DateTimeFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(DateTimeFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_DateTimeOffset()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("PublishedDateOffset"));
 
-            Assert.Equal(typeof(DateTimeOffsetFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(DateTimeOffsetFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_Object()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category"));
 
-            Assert.Equal(typeof(ObjectFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(ObjectFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Is_Boolean()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("IsPublished"));
 
-            Assert.Equal(typeof(BooleanFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(BooleanFieldMapper), propertyMapper?.GetType());
         }
 
         [Fact]
         public void Test_Not_Indexed_If_Too_Large_String()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("SeoDescription"));
 
-            Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(StringFieldMapper), propertyMapper?.GetType());
 
             var blogPost = new BlogPost { SeoDescription = new string('*', 32767) };
 
@@ -108,10 +117,11 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Field_Not_Stored()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("SeoTitle"));
 
-            Assert.Equal(typeof(StringFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(StringFieldMapper), propertyMapper?.GetType());
 
             var blogPost = new BlogPost { SeoTitle = "My Test Seo Title" };
 
@@ -124,10 +134,11 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Object_Stored_As_Json()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category"));
 
-            Assert.Equal(typeof(ObjectFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(ObjectFieldMapper), propertyMapper?.GetType());
 
             var blogPost = new BlogPost
             {
@@ -141,13 +152,14 @@ namespace Lucene.Net.DocumentMapper.Tests
             var document = documentMapper.Map(blogPost);
             var category = JsonConvert.DeserializeObject<Category>(document.GetField("Category").GetStringValue());
 
-            Assert.Equal("TestCategory", category.Name);
+            Assert.Equal("TestCategory", category?.Name);
         }
 
         [Fact]
         public void Test_ComplexType_Stored_As_Individual_Fields()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
             var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Category2"));
 
             Assert.Null(propertyMapper);
@@ -170,7 +182,7 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Collection_Primitive_Type_Fields()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
             var blogPost = new BlogPost
             {
                 TagIds = new List<string>()
@@ -191,7 +203,7 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Enum_Properly_Mapped()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
             var blogPost = new BlogPost
             {
                 Category3 = EnumCategory.Database
@@ -209,7 +221,7 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Collection_Complex_Type_Fields()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
             var blogPost = new BlogPost
             {
                 PublishedDate = DateTime.Now,
@@ -251,7 +263,7 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Collection_Nested_Complex_types()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
             var node = _fixture.Create<Node>();
 
             var document = documentMapper.Map(node);
@@ -265,15 +277,16 @@ namespace Lucene.Net.DocumentMapper.Tests
         [Fact]
         public void Test_Not_Indexed_If_Too_Large_Text()
         {
-            var documentMapper = _serviceProvider.GetService<IDocumentMapper>();
-            var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty("Body"));
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
+            var propertyMapper = documentMapper?.GetFieldMapper(typeof(BlogPost).GetProperty("Body"));
 
-            Assert.Equal(typeof(TextFieldMapper), propertyMapper.GetType());
+            Assert.Equal(typeof(TextFieldMapper), propertyMapper?.GetType());
 
             var blogPost = new BlogPost { Body = new string('*', 32767) };
 
-            var document = documentMapper.Map(blogPost);
-            var isIndexed = document.GetField("Body").IndexableFieldType.IsIndexed;
+            var document = documentMapper?.Map(blogPost);
+            var isIndexed = document?.GetField("Body").IndexableFieldType.IsIndexed;
 
             Assert.False(isIndexed);
         }

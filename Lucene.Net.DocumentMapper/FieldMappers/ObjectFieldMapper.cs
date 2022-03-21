@@ -21,7 +21,12 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
             return new StringField(name, JsonConvert.SerializeObject(value), GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as a .NET object deserialized from the JSON string, or null.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
             return JsonConvert.DeserializeObject(field.GetStringValue());
         }

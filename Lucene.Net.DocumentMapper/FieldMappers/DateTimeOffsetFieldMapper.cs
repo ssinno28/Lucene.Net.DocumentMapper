@@ -20,9 +20,15 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
             return new StringField(name, value.ToString(), GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as a <see cref="System.DateTimeOffset"/>, or null.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
-            return DateTimeOffset.Parse(field.GetStringValue());
+            var v = field.GetStringValue();
+            return v == null ? null : DateTimeOffset.Parse(v);
         }
     }
 }

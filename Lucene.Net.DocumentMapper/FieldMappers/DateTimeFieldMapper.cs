@@ -19,13 +19,20 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
         {
             DateTime convertedValue = (DateTime)value;
             return new StringField(name, 
-                DateTools.DateToString(convertedValue, DateTools.Resolution.MILLISECOND), 
+                DateTools.DateToString(convertedValue, DateResolution.MILLISECOND), // DateTools.Resolution.MILLISECOND 
                 GetStore(propertyInfo));
         }
 
-        public object MapFromField(Field field)
+        /// <summary>
+        /// The value of the field as a <see cref="System.DateTime"/>, or null.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public object? MapFromField(Field field)
         {
-            return DateTools.StringToDate(field.GetStringValue());
+            var v = field.GetStringValue();
+            // Attempt to use the Lucene.Net date conversion
+            return v == null ? null : DateTools.StringToDate(v); // return DateTime.MinValue or null?
         }
     }
 }
