@@ -93,6 +93,30 @@ It comes with a default set of Field Mappers, but you can easily add your own an
 
 If you want to override a default one, you make sure that the IsMatch method returns true for a specific property and increment the priority so it takes precedence over the default mappers. 
 
+### Mapping Multiple Fields at Once
+There may be some occasions where you need to map multiple fields at once, for instance when you use a `PointVectorStategy`. In this case you would use the IFieldsMapper interface:
+
+```c#
+    public class PointFieldMapper : IFieldsMapper
+    {
+        public bool IsMatch(Type type)
+        {
+            return type == typeof(Location);
+        }
+
+        public IList<Field> MapToFields(object @object)
+        {
+            Location location = (Location) @object;
+
+            SpatialContext ctx = SpatialContext.GEO;
+            SpatialStrategy strategy = new PointVectorStrategy(ctx, FieldPrefixes.LocationPointPrefix);
+            IShape shape = new Point(location.Longitude, location.Latitude, ctx);
+
+            return strategy.CreateIndexableFields(shape);
+        }
+    }
+```
+
 ### Object Mapping
 
 Any property that is of type `object` gets mapped to a JSON string in the field value, but if it has an actual type declared, that types properties will be mapped individually with dot notation. 
