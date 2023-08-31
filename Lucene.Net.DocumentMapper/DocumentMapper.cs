@@ -48,10 +48,6 @@ namespace Lucene.Net.DocumentMapper
 
                 if (propertyInfo.IsPropertyACollection())
                 {
-                    var genericType = propertyInfo.GetPropertyType().GetGenericArguments().Single();
-                    var listType = typeof(List<>).MakeGenericType(genericType);
-
-                    object nestedCollection = Activator.CreateInstance(listType);
                     var listFields =
                         fields.Where(x =>
                             {
@@ -64,6 +60,23 @@ namespace Lucene.Net.DocumentMapper
                                 return x.Name.Equals(propertyInfo.Name);
                             })
                             .ToList();
+
+                    var genericType = propertyInfo.GetCollectionElementType();
+                    var collectionType = propertyInfo.GetPropertyType();
+                    object nestedCollection;
+                    if (collectionType.IsInterface)
+                    {
+                        var listType = typeof(List<>).MakeGenericType(genericType);
+                        nestedCollection = Activator.CreateInstance(listType);
+                    }
+                    else if(collectionType.IsArray)
+                    {
+                        nestedCollection = Array.CreateInstance(genericType, listFields.Count);
+                    }
+                    else
+                    {
+                        nestedCollection = Activator.CreateInstance(collectionType);
+                    }
 
                     if (genericType.IsPrimitiveType())
                     {
@@ -113,7 +126,9 @@ namespace Lucene.Net.DocumentMapper
                     continue;
                 }
 
-                if (!propertyInfo.IsPrimitiveType() && propertyInfo.GetPropertyType() != typeof(object))
+                if (!propertyInfo.IsPrimitiveType() && 
+                    propertyInfo.GetPropertyType() != typeof(object) && 
+                    propertyInfo.PropertyType != typeof(byte[]))
                 {
                     object nestedComplexType = Activator.CreateInstance(propertyInfo.GetPropertyType());
                     var listFields =
@@ -234,7 +249,7 @@ namespace Lucene.Net.DocumentMapper
                         continue;
                     }
 
-                    var genericType = propertyInfo.GetPropertyType().GetGenericArguments().Single();
+                    var genericType = propertyInfo.GetCollectionElementType();
                     if (genericType.IsPrimitiveType())
                     {
                         foreach (var itemValue in propertyValueList)
@@ -255,7 +270,9 @@ namespace Lucene.Net.DocumentMapper
                     continue;
                 }
 
-                if (!propertyInfo.IsPrimitiveType() && propertyInfo.GetPropertyType() != typeof(object))
+                if (!propertyInfo.IsPrimitiveType() && 
+                    propertyInfo.GetPropertyType() != typeof(object) &&
+                    propertyInfo.PropertyType != typeof(byte[]))
                 {
                     GetFields(propertyValue, fields, name);
                     continue;

@@ -21,6 +21,8 @@ namespace Lucene.Net.DocumentMapper.Tests.Models
         public object? Category { get; set; }
         public Category? Category2 { get; set; }
         public IList<Tag> Tags { get; set; } = new List<Tag>();
+        public string[] TagsArray { get; set; }
+        public byte[] Thumbnail { get; set; }
 
         public EnumCategory Category3 { get; set; }
     }

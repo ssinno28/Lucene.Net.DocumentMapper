@@ -98,6 +98,16 @@ namespace Lucene.Net.DocumentMapper.Tests
         }
 
         [Fact]
+        public void Test_Is_ByteArray()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
+            var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty(nameof(BlogPost.Thumbnail)));
+
+            Assert.Equal(typeof(BinaryFieldMapper), propertyMapper?.GetType());
+        }
+
+        [Fact]
         public void Test_Not_Indexed_If_Too_Large_String()
         {
             var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
@@ -201,6 +211,22 @@ namespace Lucene.Net.DocumentMapper.Tests
         }
 
         [Fact]
+        public void Test_Array_Primitive_Type_Fields()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            var blogPost = new BlogPost
+            {
+                TagsArray = new[] { "1", "2", "3" }
+            };
+
+            var document = documentMapper.Map(blogPost);
+            var fields = document.Fields.Where(x => x.Name.StartsWith("TagsArray"));
+
+            Assert.Equal(3, fields.Count());
+            Assert.All(fields, field => field.Name.Equals("TagsArray"));
+        }
+
+        [Fact]
         public void Test_Enum_Properly_Mapped()
         {
             var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
@@ -258,6 +284,24 @@ namespace Lucene.Net.DocumentMapper.Tests
                 Assert.Equal(mappedBlogPost.Tags[i].Id, blogPost.Tags[i].Id);
                 Assert.Equal(mappedBlogPost.Tags[i].Name, blogPost.Tags[i].Name);
             }
+        }        
+        
+        [Fact]
+        public void Test_BinaryArray_Fields()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            var thumbnail = GetByteArray(10);
+            var blogPost = new BlogPost
+            {
+                PublishedDate = DateTime.Now,
+                PublishedDateOffset = DateTimeOffset.Now,
+                Thumbnail = thumbnail
+            };
+
+            var document = documentMapper.Map(blogPost);
+            var field = document.Fields.Single(x => x.Name.Equals("Thumbnail"));
+
+            Assert.Equal(thumbnail, field.GetBinaryValue().Bytes);
         }
 
         [Fact]
@@ -289,6 +333,14 @@ namespace Lucene.Net.DocumentMapper.Tests
             var isIndexed = document?.GetField("Body").IndexableFieldType.IsIndexed;
 
             Assert.False(isIndexed);
+        }
+
+        private byte[] GetByteArray(int sizeInKb)
+        {
+            Random rnd = new Random();
+            byte[] b = new byte[sizeInKb * 1024]; // convert kb to byte
+            rnd.NextBytes(b);
+            return b;
         }
     }
 }

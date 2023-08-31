@@ -13,7 +13,7 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
         {
             if (propertyInfo.IsPropertyACollection())
             {
-                return propertyInfo.GetPropertyType().GetGenericArguments().Single();
+                return propertyInfo.GetCollectionElementType();
             }
 
             return propertyInfo.GetPropertyType();
