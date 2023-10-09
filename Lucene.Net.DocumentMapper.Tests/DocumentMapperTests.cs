@@ -163,6 +163,22 @@ namespace Lucene.Net.DocumentMapper.Tests
             var category = JsonConvert.DeserializeObject<Category>(document.GetField("Category").GetStringValue());
 
             Assert.Equal("TestCategory", category?.Name);
+        }       
+        
+        [Fact]
+        public void Test_DateTimeOffset_ProperlyStoredAndFetched()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            var dateTimeOffset = new DateTimeOffset(2008, 8, 22, 1, 0, 0, new TimeSpan(-5, 0, 0));
+
+            var blogPost = new BlogPost
+            {
+               PublishedDateOffset = dateTimeOffset
+            };
+
+            var document = documentMapper.Map(blogPost);
+            var mappedBlogPost = documentMapper.Map<BlogPost>(document);
+            Assert.Equal(dateTimeOffset, mappedBlogPost.PublishedDateOffset);
         }
 
         [Fact]

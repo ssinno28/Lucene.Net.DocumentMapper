@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
+using J2N.Text;
 using Lucene.Net.DocumentMapper.Interfaces;
 using Lucene.Net.Documents;
 
@@ -7,6 +9,7 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
 {
     public class DateTimeOffsetFieldMapper : AFieldMapper, IFieldMapper
     {
+        private string _format = "yyyyMMddHHmmss.fffzzzzz";
         public int Priority => 0;
 
         public bool IsMatch(PropertyInfo propertyInfo)
@@ -17,7 +20,11 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
 
         public Field MapToField(PropertyInfo propertyInfo, object value, string name)
         {
-            return new StringField(name, value.ToString(), GetStore(propertyInfo));
+            DateTimeOffset convertedValue = (DateTimeOffset)value;
+            var dateString = convertedValue.ToString(_format,  CultureInfo.InvariantCulture);
+            return new StringField(name,
+                dateString,
+                GetStore(propertyInfo));
         }
 
         /// <summary>
@@ -27,8 +34,11 @@ namespace Lucene.Net.DocumentMapper.FieldMappers
         /// <returns></returns>
         public object? MapFromField(Field field)
         {
-            var v = field.GetStringValue();
-            return v == null ? null : DateTimeOffset.Parse(v);
+            var dateString = field.GetStringValue();
+            if (!DateTimeOffset.TryParseExact(dateString, _format, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal, out DateTimeOffset dateOffset))
+                throw new ParseException($"Input is not valid date string: '{dateString}'.", 0);
+
+            return dateOffset;
         }
     }
 }
