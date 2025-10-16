@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Lucene.Net.DocumentMapper.Attributes;
+using Lucene.Net.DocumentMapper.Interfaces;
 
 namespace Lucene.Net.DocumentMapper.Tests.Models
 {
-    public class BlogPost
+    public class BlogPost : ILocationIndex
     {
         public DateTime PublishedDate { get; set; }
         public DateTimeOffset PublishedDateOffset { get; set; }
+        public DateOnly PublishedDateOnly { get; set; }
+        public TimeOnly PublishedTimeOnly { get; set; }
         public bool IsPublished { get; set; }
         public string Name { get; set; } = string.Empty;
         [Search(Tokenized = true)]
@@ -25,6 +28,8 @@ namespace Lucene.Net.DocumentMapper.Tests.Models
         public byte[] Thumbnail { get; set; }
 
         public EnumCategory Category3 { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 
     public enum EnumCategory

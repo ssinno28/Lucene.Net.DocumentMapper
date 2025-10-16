@@ -351,6 +351,56 @@ namespace Lucene.Net.DocumentMapper.Tests
             Assert.False(isIndexed);
         }
 
+        [Fact]
+        public void Test_Is_TimeOnly()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
+            var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty(nameof(BlogPost.PublishedTimeOnly)));
+
+            Assert.Equal(typeof(TimeOnlyFieldMapper), propertyMapper?.GetType());
+
+            var timeOnly = new TimeOnly(14, 30, 0);
+            var blogPost = new BlogPost { PublishedTimeOnly = timeOnly };
+            var document = documentMapper.Map(blogPost);
+            var mappedBlogPost = documentMapper.Map<BlogPost>(document);
+            Assert.Equal(timeOnly, mappedBlogPost.PublishedTimeOnly);
+        }
+
+        [Fact]
+        public void Test_Is_DateOnly()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+            // public PropertyInfo? GetProperty(string name);
+            var propertyMapper = documentMapper.GetFieldMapper(typeof(BlogPost).GetProperty(nameof(BlogPost.PublishedDateOnly)));
+
+            Assert.Equal(typeof(DateOnlyFieldMapper), propertyMapper?.GetType());
+
+            var dateOnly = new DateOnly(2023, 12, 25);
+            var blogPost = new BlogPost { PublishedDateOnly = dateOnly };
+            var document = documentMapper.Map(blogPost);
+            var mappedBlogPost = documentMapper.Map<BlogPost>(document);
+            Assert.Equal(dateOnly, mappedBlogPost.PublishedDateOnly);
+        }
+
+        [Fact]
+        public void Test_Is_Point()
+        {
+            var documentMapper = _serviceProvider.GetRequiredService<IDocumentMapper>();
+
+            var blogPost = new BlogPost 
+            { 
+                Latitude = 40.7128, 
+                Longitude = -74.0060 
+            };
+
+            var document = documentMapper.Map(blogPost);
+            var mappedBlogPost = documentMapper.Map<BlogPost>(document);
+            
+            Assert.Equal(blogPost.Latitude, mappedBlogPost.Latitude);
+            Assert.Equal(blogPost.Longitude, mappedBlogPost.Longitude);
+        }
+
         private byte[] GetByteArray(int sizeInKb)
         {
             Random rnd = new Random();
